@@ -21,10 +21,11 @@ window.findNRooksSolution = function(n) {
   var board = new Board({n: n});
   board.togglePiece(0, 0);
 
+  var numPiece = 1;
   //takes a board as an input argument and returns a new board with the next viable position of a piece
   var findNextViablePos = function(board, startRowIndex, startColIndex) {   
-    var numPiece = 1;
-
+    
+    //find the next position on the board traversing left->right, up->down
     var findOpenPosition = function(startRowIndex, startColIndex) {
       //if next open position is the spot to the right of the current position
       if (startColIndex + 1 < n) {
@@ -46,6 +47,7 @@ window.findNRooksSolution = function(n) {
 
     //check if the placed piece has any conflicts
     while (board.hasAnyRooksConflicts() && nextOpenPosition) {
+      //remove the piece from the board since it has a conflict and find the next open position
       board.togglePiece(nextOpenPosition[0], nextOpenPosition[1]);
       nextOpenPosition = findOpenPosition(nextOpenPosition[0], nextOpenPosition[1]);
       if (nextOpenPosition) {
@@ -53,10 +55,7 @@ window.findNRooksSolution = function(n) {
       }
     }
 
-      //if there is a conflict
-        //toggle newly added piece off and find the next position
-      //if there are no conflicts
-        //find next position with modified board
+    //once a piece has been placed without a conflict, keep it on the board and find the next viable position
     if (!board.hasAnyRooksConflicts()) {
       numPiece++;
       if (numPiece < n) {
@@ -65,11 +64,9 @@ window.findNRooksSolution = function(n) {
         }
       } else {
         var solnMatrix = [];
-        console.log(board);
         for (var i = 0; i < board.rows().length; i++) {
           solnMatrix.push(board.rows()[i]);
         }
-        console.log(solnMatrix);        
         solution.push(solnMatrix);
       }
     }
