@@ -78,152 +78,189 @@ window.findNRooksSolution = function(n) {
   return solution[0];
 };
 
-// window.countNRooksSolutions = function(n) {
-  
-//   var solution = [];
+var findAllRookSolutions = function(currentN) {
+  // console.log('n= ' + currentN);
+  var newSolutions = [];
 
-//   var helperFunction = function(currentN) {
-//     console.log('n= ' + currentN);
-//     var newSolutions = [];
+  // if (currentN < 1) {
+  //   currentN = 1;
+  // }
+  // get the solutions for the n-1 case
+  if (currentN > 1) {
+    var previousSolns = findAllRookSolutions(currentN - 1);
+  } else if (currentN === 1) { 
+    return [[[1]]];
+  } else {
+    // alert('n must be a positive integer');
+    return [0];
+  }
 
-//     // get the solutions for the n-1 case
-//     if (currentN > 1) {
-//       var previousSolns = helperFunction(currentN - 1);
-//     } else if (currentN === 1) { 
-//       return [[[1]]];
-//     } else {
-//       alert('n must be a positive integer');
-//       return;
-//     }
+  //make a row of length n with the last position filled
+  var newRow = [];
+  for (var i = 0; i < currentN; i++) {
+    newRow.push(0);
+  }
+  newRow[newRow.length - 1] = 1;
 
-//     //make a row of length n with the last position filled
-//     var newRow = [];
-//     for (var i = 0; i < currentN; i++) {
-//       newRow.push(0);
-//     }
-//     newRow[newRow.length - 1] = 1;
-
-//     //iterate through each solution for n-1 rooks
-//     for (var i = 0; i < previousSolns.length; i++) {
-//       //iterate through each row of a single previous solution
-//       for (var j = 0; j < previousSolns[i].length; j++) {
-//         //add an empty position to the end of each row
-//         //console.log(previousSolns[i]);
-//         previousSolns[i][j].push(0);
-//       }
-//     }
-
-//     //row swap the new row with each row of the existing solutions
-//     for (var i = 0; i < previousSolns.length; i++) {
-//       //line swap with each row of an old solution 
-//       var oneSolution = previousSolns[i];
-//       for (var j = 0; j < currentN; j++) {
-//         //console.log(j, ' ', previousSolns[i].length);
-//         var newSolution = JSON.parse(JSON.stringify(oneSolution));
-//         newSolution.splice(j, 0, JSON.parse(JSON.stringify(newRow)));
-//         //console.log('previous solution = ', JSON.stringify(previousSolns));
-//         //console.log('new solution = ', JSON.stringify(newSolution));
-//         newSolutions.push(newSolution); 
-//       }
-//     }
-
-//     // newSolutions.forEach(function(element) {
-//     //   console.log(JSON.stringify(element) + '\n');
-//     // });
-
-//     return newSolutions;
-//   };
-
-//   solution = helperFunction(n);
-//   var solutionCount = solution.length; //fixme
-
-//   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-//   return solutionCount;
-// };
-
-// // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
-window.countNRooksSolutions = function(n) {
-  var solution = [];
-  var board = new Board({n: n});
-  var numPiece = 0;
-  var availableRows = _.range(n); // [0, 1, 2, ...n]
-  var availableCols = _.range(n); // [0, 1, 2, ...n]
-  
-  //takes a board as an input argument and returns a new board with the next viable position of a piece
-  var findNextViablePos = function(board, startRowIndex, startColIndex) {      
-    //find the next position on the board traversing left->right, up->down
-    var findOpenPosition = function(startRowIndex, startColIndex) {
-      var positionAvailable = false;
-
-      while (!positionAvailable) {
-        if (startColIndex < n) {
-          startColIndex++; 
-        } else if (startRowIndex < n) {
-          startRowIndex++;
-          startColIndex = 0;
-        } else {
-          return null;
-        }
-        
-        if (_.indexOf(availableRows, startRowIndex) !== -1 && _.indexOf(availableCols, startColIndex) !== -1) {
-          positionAvailable = true;
-          return {row: startRowIndex, col: startColIndex};
-        }
-      }
-    };
-
-    var nextOpenPosition = findOpenPosition(startRowIndex, startColIndex);
-    //check if the placed piece has any conflicts
-    while (nextOpenPosition) {
-      // turn on position
-      board.togglePiece(nextOpenPosition.row, nextOpenPosition.col);
-      numPiece++;
-      //remove that piece's rows and cols from available positions
-      availableRows.splice(_.indexOf(availableRows, nextOpenPosition.row), 1);
-      availableCols.splice(_.indexOf(availableCols, nextOpenPosition.col), 1);
-
-      //once a piece has been placed without a conflict, keep it on the board and find the next viable position
-      //if (!board.hasAnyRooksConflicts()) {
-        if (numPiece < n) {
-          findNextViablePos(board, nextOpenPosition.row);
-        } else {
-          var solnMatrix = Array.prototype.slice.call(board.rows());
-          //console.log(JSON.stringify(solnMatrix));
-          solution.push(solnMatrix);
-        }
-      //} 
-    
-      // turn off position, find next open position
-      board.togglePiece(nextOpenPosition.row, nextOpenPosition.col);
-      availableRows.push(nextOpenPosition.row);
-      availableCols.push(nextOpenPosition.col);
-      numPiece--;
-      nextOpenPosition = findOpenPosition(nextOpenPosition.row, nextOpenPosition.col);
+  //iterate through each solution for n-1 rooks
+  for (var i = 0; i < previousSolns.length; i++) {
+    //iterate through each row of a single previous solution
+    for (var j = 0; j < previousSolns[i].length; j++) {
+      //add an empty position to the end of each row
+      //console.log(previousSolns[i]);
+      previousSolns[i][j].push(0);
     }
-  };
-          
-  findNextViablePos(board, 0, -1);
+  }
 
+  //row swap the new row with each row of the existing solutions
+  for (var i = 0; i < previousSolns.length; i++) {
+    //line swap with each row of an old solution 
+    var oneSolution = previousSolns[i];
+    for (var j = 0; j < currentN; j++) {
+      //console.log(j, ' ', previousSolns[i].length);
+      var newSolution = JSON.parse(JSON.stringify(oneSolution));
+      newSolution.splice(j, 0, JSON.parse(JSON.stringify(newRow)));
+      //console.log('previous solution = ', JSON.stringify(previousSolns));
+      //console.log('new solution = ', JSON.stringify(newSolution));
+      newSolutions.push(newSolution); 
+    }
+  }
 
-    ///--------------
+  // newSolutions.forEach(function(element) {
+  //   console.log(JSON.stringify(element) + '\n');
+  // });
 
+  return newSolutions;
+};
+
+window.countNRooksSolutions = function(n) {
+  
+  var solution = [];
+
+  solution = findAllRookSolutions(n);
   var solutionCount = solution.length; //fixme
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
 
-// return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
+// // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
+// window.countNRooksSolutions = function(n) {
+//   var solution = [];
+//   var board = new Board({n: n});
+//   var numPiece = 0;
+//   var availableRows = _.range(n); // [0, 1, 2, ...n]
+//   var availableCols = _.range(n); // [0, 1, 2, ...n]
+  
+//   //takes a board as an input argument and returns a new board with the next viable position of a piece
+//   var findNextViablePos = function(board, startRowIndex, startColIndex) {      
+//     //find the next position on the board traversing left->right, up->down
+//     var findOpenPosition = function(startRowIndex, startColIndex) {
+//       var positionAvailable = false;
+
+//       while (!positionAvailable) {
+//         if (startColIndex < n) {
+//           startColIndex++; 
+//         } else if (startRowIndex < n) {
+//           startRowIndex++;
+//           startColIndex = 0;
+//         } else {
+//           return null;
+//         }
+        
+//         if (_.indexOf(availableRows, startRowIndex) !== -1 && _.indexOf(availableCols, startColIndex) !== -1) {
+//           positionAvailable = true;
+//           return {row: startRowIndex, col: startColIndex};
+//         }
+//       }
+//     };
+
+//     var nextOpenPosition = findOpenPosition(startRowIndex, startColIndex);
+//     //check if the placed piece has any conflicts
+//     while (nextOpenPosition) {
+//       // turn on position
+//       board.togglePiece(nextOpenPosition.row, nextOpenPosition.col);
+//       numPiece++;
+//       //remove that piece's rows and cols from available positions
+//       availableRows.splice(_.indexOf(availableRows, nextOpenPosition.row), 1);
+//       availableCols.splice(_.indexOf(availableCols, nextOpenPosition.col), 1);
+
+//       //once a piece has been placed without a conflict, keep it on the board and find the next viable position
+//       // if (!board.hasAnyRooksConflicts()) {
+//         if (numPiece < n) {
+//           findNextViablePos(board, nextOpenPosition.row);
+//         } else {
+//           var solnMatrix = Array.prototype.slice.call(board.rows());
+//           //console.log(JSON.stringify(solnMatrix));
+//           solution.push(solnMatrix);
+//         }
+//       // } 
+    
+//       // turn off position, find next open position
+//       board.togglePiece(nextOpenPosition.row, nextOpenPosition.col);
+//       availableRows.push(nextOpenPosition.row);
+//       availableCols.push(nextOpenPosition.col);
+//       numPiece--;
+//       nextOpenPosition = findOpenPosition(nextOpenPosition.row, nextOpenPosition.col);
+//     }
+//   };
+          
+//   findNextViablePos(board, 0, -1);
+
+
+//     ///--------------
+
+//   var solutionCount = solution.length; //fixme
+
+//   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+//   return solutionCount;
+// };
+
+// // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+
+  var solutions = findAllRookSolutions(n);
+  var i = 0;
+  // for 2 and 3 cases
+  var solution = new Board({n: n});
+  var numPieces = function() {
+    // console.log(solution);
+    return _.reduce(solution.rows(), function(memo, row) {
+      return memo + _.reduce(row, function(memo, col) {
+        return memo + col;
+      }, 0);
+    }, 0); 
+  }; //expect numPieces initialize as zero for empty board
+
+  while (!numPieces() && i < solutions.length) {
+    var oneSolution = new Board(solutions[i]);
+
+    if (!oneSolution.hasAnyMajorDiagonalConflicts() && !oneSolution.hasAnyMinorDiagonalConflicts()) {
+      solution = oneSolution;
+    }
+
+    i++;
+  }
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+  return solution.rows();
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutions = findAllRookSolutions(n);
+  var i = 0;
+  var solution = [];
+
+  for (var i = 0; i < solutions.length; i++) {
+    var oneSolution = new Board(solutions[i]);
+
+    if (!oneSolution.hasAnyMajorDiagonalConflicts() && !oneSolution.hasAnyMinorDiagonalConflicts()) {
+      solution.push(oneSolution);
+    }
+  }
+
+  var solutionCount = solution.length;
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
