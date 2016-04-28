@@ -183,7 +183,7 @@ window.countNRooksSolutions = function(n) {
       availableCols.splice(_.indexOf(availableCols, nextOpenPosition.col), 1);
 
       //once a piece has been placed without a conflict, keep it on the board and find the next viable position
-      if (!board.hasAnyRooksConflicts()) {
+      //if (!board.hasAnyRooksConflicts()) {
         if (numPiece < n) {
           findNextViablePos(board, nextOpenPosition.row);
         } else {
@@ -191,7 +191,7 @@ window.countNRooksSolutions = function(n) {
           //console.log(JSON.stringify(solnMatrix));
           solution.push(solnMatrix);
         }
-      } 
+      //} 
     
       // turn off position, find next open position
       board.togglePiece(nextOpenPosition.row, nextOpenPosition.col);
