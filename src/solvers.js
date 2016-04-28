@@ -219,20 +219,21 @@ window.countNRooksSolutions = function(n) {
 // // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
 
+  //iterates over the solutions from findAllRooks to further isolate the subset of viable queens
   var solutions = findAllRookSolutions(n);
   var i = 0;
-  // for 2 and 3 cases
+  // initialize an empty board as default 'solution' for cases when no solution is found (i.e. 2, 3)
   var solution = new Board({n: n});
+  //calculates the number of pieces placed on an empty board
   var numPieces = function() {
-    // console.log(solution);
     return _.reduce(solution.rows(), function(memo, row) {
       return memo + _.reduce(row, function(memo, col) {
         return memo + col;
       }, 0);
     }, 0); 
-  }; //expect numPieces initialize as zero for empty board
+  }; 
 
-  while (!numPieces() && i < solutions.length) {
+  //iterate over the rook solutions to find one that also satisfies a board of queens (no diagonal conflicts)
     var oneSolution = new Board(solutions[i]);
 
     if (!oneSolution.hasAnyMajorDiagonalConflicts() && !oneSolution.hasAnyMinorDiagonalConflicts()) {
@@ -320,7 +321,7 @@ window.countNQueensSolutions = function(n) {
 
     ///--------------
 
-  //cheat because zero case makes no sense
+  //zero factorial equals one solution because reasons..
   if (n === 0) {
     solution = [[0]];
   }
