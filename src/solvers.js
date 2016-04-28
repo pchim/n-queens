@@ -202,7 +202,7 @@ window.countNRooksSolutions = function(n) {
     }
   };
           
-  findNextViablePos(board, -1);
+  findNextViablePos(board, 0, -1);
 
 
     ///--------------
